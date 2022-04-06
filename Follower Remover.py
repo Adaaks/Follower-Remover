@@ -90,10 +90,15 @@ while val == True:
                     pass
             block = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/block")
             unblock = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/unblock")
-            
-            times+=1
-            print(f"{Fore.BLUE}[Progress] {times}/{count3}")
 
+            if block.status_code != 200 or unblock.status_code != 200:
+                print(f"{Fore.RED}[RATELIMIT] Too much requests being sent") 
+            else: 
+                count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
+                count5 = count.json()
+                count3 = count5['count']
+                times+=1
+                print(f"{Fore.BLUE}[Progress] {times}/{count3}")
         program()
 
     except:
@@ -103,7 +108,7 @@ while val == True:
             time.sleep(5)
             quit()
         else:
-            print(f"{Fore.RED}[ERROR] Index Error")
+            print(f"{Fore.RED}[ERROR] This occurs when there is an issue with the code")
             time.sleep(5)
             quit()
        
