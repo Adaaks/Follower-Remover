@@ -49,24 +49,12 @@ except:
 friends2 = True
 friendscount = 0
 friendslist = []
-try:
-    print(f"{Fore.MAGENTA}[FETCHING] Fetching for friends")
-    def friends():
-        global friends2
-        global friendscount
-        global friendslist
-        while friends2 == True:
-            getallfriends = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/friends?userSort=StatusFrequents")
-            getfriendsjson = getallfriends.json()
-            allfriends = getfriendsjson['data'][friendscount]['id']
-            friendscount+=1
-            friendslist += [allfriends]
-    friends()
-except:
-    friends = False
-    print(f"{Fore.MAGENTA}[FETCHED] Finished getting all friends")
-    pass
 
+print(f"{Fore.MAGENTA}[FETCHING] Fetching for friends")
+response = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/friends?userSort=StatusFrequents")
+ids_and_item_types = response.json()["data"]
+friendslist = [datum["id"] for datum in ids_and_item_types]
+print(f"{Fore.MAGENTA}[FETCHED] Finished getting all friends")
 
 count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
 count5 = count.json()
@@ -92,7 +80,7 @@ while val == True:
             unblock = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/unblock")
 
             if block.status_code != 200 or unblock.status_code != 200:
-                print(f"{Fore.RED}[RATELIMIT] Too much requests being sent") 
+                print(f"{Fore.RED}[RATELIMIT] Too much requests being sent (codes: {block.status_code}/{unblock.status_code})") 
             else: 
                 count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
                 count5 = count.json()
