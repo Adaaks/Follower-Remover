@@ -1,4 +1,4 @@
-# Remove-Followers
+# Follower Remover
 Removes all your ROBLOX followers 
 
 # Requirements
