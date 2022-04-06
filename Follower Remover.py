@@ -1,15 +1,17 @@
 try:
+    import time
     import colorama
     import requests
     import configparser
     import os
     from colorama import init, Fore, Back, Style
     init()
-    import time
+    
 except ImportError:
-    print(Fore.RED + "[ERROR] Failed to import some modules, install the required modules listed:\n- requests\n- colorama\n- configparser\n\nThese can be installed via going to the cmd, and typing pip install (moduleName)")
+    print("[ERROR] Failed to import some modules, install the required modules listed:\n- requests\n- colorama\n- configparser\n\nThese can be installed via going to the cmd, and typing pip install (moduleName)")
     time.sleep(5)
     quit()
+    
 config = configparser.ConfigParser()
 config.read_file(open(r"Config.ini"))
 cookie = str(config.get("auth","cookie"))
@@ -33,7 +35,6 @@ req2 = session.post(
 )
 page = 0
 
-
 try:
     
     getuser = session.get("https://users.roblox.com/v1/users/authenticated")
@@ -42,7 +43,7 @@ try:
     getuser4 = getuser2['name']
     print(f"{Fore.GREEN}[Authentication] Logged in as {getuser4}")
 except:
-    print(f"{Fore.RED}[ERROR] Your cookie is invalid!")
+    print(f"{Fore.RED}[ERROR] Your cookie is invalid")
     time.sleep(3)
     quit()
 
@@ -59,45 +60,59 @@ print(f"{Fore.MAGENTA}[FETCHED] Finished getting all friends")
 count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
 count5 = count.json()
 count3 = count5['count']
-times = 0
 val = True
+if count3 == 0:
+    print(Fore.RED + "[ERROR] Your followers have been removed already")
+    val = False
+    time.sleep(5)
+    quit()
+
+times = 0
+
 while val == True:
-    try: 
-        def program():
-            global times
-            global count
-            global val
-            getfollower = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers")
-            followes = getfollower.json()
-            followers2 = followes['data'][0]['id']
-            if followers2 in friendslist:
-                print(f"{Fore.YELLOW}[Notification] A friend has been removed (id: {followers2})")
-                with open('FriendsToAddBack.txt','a') as file:
-                    write = file.writelines(str(followers2)+'\n')
-                    file.close()
-                    pass
-            block = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/block")
-            unblock = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/unblock")
+    
+    def program():
+        global times
+        global count
+        global val
+        getfollower = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers")
+        followes = getfollower.json()
+        followers2 = followes['data'][0]['id']
+        if followers2 in friendslist:
+            print(f"{Fore.YELLOW}[Notification] A friend has been removed (id: {followers2})")
+            with open('FriendsToAddBack.txt','a') as file:
+                write = file.writelines(str(followers2)+'\n')
+                file.close()
+                pass
+        block = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/block")
+        unblock = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/unblock")
+        
+        
+        if block.status_code == 401 and unblock.status_code == 401:
+            print(f"{Fore.RED}[AUTH] Token Validation Failed (codes: {block.status_code}/{unblock.status_code})")
+            val = False
+            print(f"{Fore.YELLOW}[INFO] Please restart the program, with a new cookie")
+            time.sleep(1000000)
+        
+        elif block.status_code == 400 or unblock.status_code == 400:
+            print(f"{Fore.RED}[RATELIMIT] Too much requests being sent (codes: {block.status_code}/{unblock.status_code})")
+        
+        
+        else: 
+            count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
+            count5 = count.json()
+            count3 = count5['count']
+            times+=1
+            print(f"{Fore.BLUE}[Progress] {times}/{count3}")
+    program()
 
-            if block.status_code != 200 or unblock.status_code != 200:
-                print(f"{Fore.RED}[RATELIMIT] Too much requests being sent (codes: {block.status_code}/{unblock.status_code})") 
-            else: 
-                count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
-                count5 = count.json()
-                count3 = count5['count']
-                times+=1
-                print(f"{Fore.BLUE}[Progress] {times}/{count3}")
-        program()
 
-    except:
-        val = False
-        if times == count3:
-            print(f"{Fore.GREEN}[SUCCESS] Removed all followers")
-            time.sleep(5)
-            quit()
-        else:
-            print(f"{Fore.RED}[ERROR] This occurs when there is an issue with the code")
-            time.sleep(5)
-            quit()
-       
+    if times >= count3:
+        print(f"{Fore.GREEN}[SUCCESS] Removed all followers")
+        print(f"{Fore.YELLOW}[INFO] You may want to check if you have any friends to add back in: FriendsToAddBack.txt")
+        time.sleep(10)
+        quit()
+    
+        
+
         
