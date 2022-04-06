@@ -16,6 +16,7 @@ Removes all your ROBLOX followers
 
 - This bot will remove friends that are following you, however - friends that get removed will be added to a text file, so you can add them back later.
 - The way the bot works is by blocking followed users and unblocking them
+- It isn't possible to change the speed of the bot, without adding proxies due to ratelimits 
 
 # Example 
 
