@@ -32,10 +32,8 @@ if "X-CSRF-Token" in req.headers:  # check if token is in response headers
 req2 = session.post(
     url="https://auth.roblox.com/"
 )
-page = 0
 
 try:
-    
     getuser = session.get("https://users.roblox.com/v1/users/authenticated")
     getuser2 = getuser.json()
     getuser3 = getuser2['id']
@@ -44,10 +42,6 @@ try:
 except:
     print(f"{Fore.RED}[ERROR] Your cookie is invalid")
     input()
-
-friends2 = True
-friendscount = 0
-friendslist = []
 
 print(f"{Fore.MAGENTA}[FETCHING] Fetching for friends")
 response = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/friends?userSort=StatusFrequents")
@@ -64,6 +58,8 @@ if count3 == 0:
     val = False
     input()
 
+
+friendslist = []
 times = 0
 
 while val == True:
@@ -83,15 +79,10 @@ while val == True:
                 write = file.writelines(str(followers2)+'\n')
                 file.close()
                 pass
-        counth = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
-        countb = counth.json()
-        countq = countb['count']
-
         
         block = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/block")
         unblock = session.post(f"https://accountsettings.roblox.com/v1/users/{followers2}/unblock")
         
-
         if block.status_code == 400:
             print(f"{Fore.RED}[RATELIMIT] Too much requests being sent (codes: {block.status_code}/{unblock.status_code})")
             
@@ -120,13 +111,9 @@ while val == True:
             req2 = session.post(
                 url="https://auth.roblox.com/"
             )
-
         elif block.status_code == 200 and unblock.status_code == 200: 
-            count = session.get(f"https://friends.roblox.com/v1/users/{getuser3}/followers/count")
-            count5 = count.json()
-            count3 = count5['count']
             times+=1
-            print(f"{Fore.BLUE}[Progress] {times}/{count3} ({block.status_code}/{unblock.status_code})")
+            print(f"{Fore.BLUE}[Progress] {times}/{count3}")
 
     program()
 
