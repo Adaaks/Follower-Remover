@@ -117,7 +117,10 @@ while val == True:
             times+=1
             timescomma = "{:,}".format(times)
             count3comma = "{:,}".format(count3)
-            print(f"{Back.BLUE}{Fore.BLACK}[Progress]{Fore.WHITE}{Back.BLACK} {timescomma}/{count3comma}")
+            quote = int(times) / int(count3)
+            percentage = quote * 100
+            percentage = round(percentage,3)
+            print(f"{Back.BLUE}{Fore.BLACK}[Progress]{Fore.WHITE}{Back.BLACK} ({timescomma}/{count3comma}) ({percentage}%)")
 
     program()
 
